@@ -1,0 +1,24 @@
+[package]
+name = "kaiju-vm-cli"
+version = "0.1.1"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Virtual machine CLI (Keijo) module of modern assembly language toolset"
+repository = "https://github.com/PsichiX/kaiju-toolset"
+readme = "README.md"
+keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+categories = ["parser-implementations", "emulators"]
+license = "MIT"
+documentation = "https://docs.rs/kaiju-vm-cli"
+
+[dependencies]
+kaiju-compiler-cli-core = { version = "0.1", path = "../kaiju-compiler-cli-core" }
+kaiju-vm-core = { version = "0.1", path = "../kaiju-vm-core" }
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+clap = "2.32"
+lazy_static = "1.2"
+libloading = "0.5"
+
+[[bin]]
+name = "keijo"
+path = "src/main.rs"

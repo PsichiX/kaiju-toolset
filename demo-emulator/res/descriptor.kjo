@@ -1,0 +1,88 @@
+// tells machine to stop processing and let it render screen.
+halt {}
+goto label: *u8 {}
+if test: i16 then: *u8 else: *u8 {}
+// immediately returns from function.
+ret {}
+// drops value (mostly used when calling a function without return type).
+pass v: $? {}
+dbgi v: i16 {}
+dbgs v: *u8 {}
+dbgp v: *$? {}
+dbgm addr: *$? size: i16 {}
+// prints unspecified state information.
+test {}
+// casts pointer from one type to another.
+cstp addr: *$? => *$? {}
+// offsets pointer by N bytes.
+poff addr: *$? offset: i16 => *$? {}
+// converts integer to byte.
+i2b v: i16 => u8 {}
+// converts byte to integer.
+b2i v: u8 => i16 {}
+// alloc N bytes on heap.
+allc size: i16 => *$? {}
+// dealloc memory block from heap.
+free address: *$? {}
+
+// sets rendering mode by flags (1: text; 2: graphics)
+mode flags: i16 {}
+// gets currently hold buttons as flags.
+inp => i16 {}
+data => *i16 {}
+// sets tile sprite index.
+tls index: i16 col: i16 row: i16 {}
+// sets tile normal blending.
+tln {}
+// sets tile key color blending.
+tlb xr: i16 gb: i16 {}
+// sets tiles viewport offset.
+tlv x: i16 y: i16 {}
+// sets object sprite index.
+objs index: i16 spr: i16 {}
+// sets object position.
+objp index: i16 x: i16 y: i16 {}
+// sets object normal blending.
+objn index: i16 {}
+// sets object key color blending.
+objb index: i16 high: i16 low: i16 {}
+// sets objects viewport offset.
+objv x: i16 y: i16 {}
+// tells machine to save data from buffer.
+std addr: *i16 size: i16 {}
+// tells machine to load data from buffer.
+ldd addr: *i16 size: i16 {}
+// tells if machine has stored data.
+hd => i16 {}
+// sets background color.
+bgc xr: i16 gb: i16 {}
+// sets foreground color.
+fgc xr: i16 gb: i16 {}
+// sets text character on screen.
+chr code: u8 x: i16 y: i16 {}
+// gets incoming pressed characters count.
+kcc => i16 {}
+// gets incoming character.
+gkc index: i16 => u8 {}
+// fast overlapping test.
+ovlp a: (i16, i16, i16, i16) b: (i16, i16, i16, i16) => i16 {}
+
+add a: i16 b: i16 => i16 {}
+sub a: i16 b: i16 => i16 {}
+mul a: i16 b: i16 => i16 {}
+div a: i16 b: i16 => i16 {}
+mod a: i16 b: i16 => i16 {}
+mov v: i16 => i16 {}
+eq a: i16 b: i16 => i16 {}
+nq a: i16 b: i16 => i16 {}
+gt a: i16 b: i16 => i16 {}
+lt a: i16 b: i16 => i16 {}
+ge a: i16 b: i16 => i16 {}
+le a: i16 b: i16 => i16 {}
+lsh a: i16 b: i16 => i16 {}
+rsh a: i16 b: i16 => i16 {}
+and a: i16 b: i16 => i16 {}
+or a: i16 b: i16 => i16 {}
+xor a: i16 b: i16 => i16 {}
+neg v: i16 => i16 {}
+rnd => i16 {}

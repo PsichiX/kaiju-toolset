@@ -1,0 +1,29 @@
+[package]
+name = "demo-emulator"
+version = "0.1.1"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Demo oldschool emulator using Kaiju toolset"
+
+[dependencies]
+kaiju-vm-core = { version = "0.1", path = "../kaiju-vm-core" }
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+clap = "2.32"
+lazy_static = "1.2"
+png = "0.13"
+minifb = "0.11"
+byteorder = "1"
+rayon = "1.0"
+rand ="0.6"
+
+[[bin]]
+name = "cartridge"
+path = "src/cartridge/main.rs"
+
+[[bin]]
+name = "console"
+path = "src/console/main.rs"
+
+[[bin]]
+name = "fontgen"
+path = "src/fontgen/main.rs"

@@ -1,0 +1,13 @@
+#![auto_integer_type('i16')];
+
+import {
+  text_mode_setup,
+  text_mode_run,
+  prints,
+} from './std/text_mode.kj';
+
+export fn main() {
+  pass @<text_mode_setup(20, 16)>;
+  pass @<prints('Hello!\n')>;
+  pass @<text_mode_run()>;
+}

@@ -1,0 +1,115 @@
+#![auto_integer_type('i16')];
+
+<
+  TEXT_MODE_POS: (i16, i16),
+  TEXT_MODE_SIZE: (i16, i16),
+  TEXT_MODE_CARRET_ACCUM: i16,
+  TEXT_MODE_CARRET_PHASE: i16,
+>
+
+// TODO: optimize.
+fn abs(value: i16): i16 {
+  if !<lt value 0> 'negate' 'pass';
+negate:
+  mul value -1 => _;
+  ret;
+pass:
+  mov value => _;
+}
+
+fn max(a: i16, b: i16): i16 {
+  if !<gt a b> 'a' 'b';
+a:
+  mov a => _;
+  ret;
+b:
+  mov b => _;
+}
+
+fn text_mode_setup(cols: i16, rows: i16) {
+  mov cols => TEXT_MODE_SIZE.0;
+  mov rows => TEXT_MODE_SIZE.1;
+  mov 10 => TEXT_MODE_CARRET_ACCUM;
+  mov 0xFFFF => TEXT_MODE_CARRET_PHASE;
+}
+
+fn clear_screen() <i: i16, c: i16, x: i16, y: i16> {
+  mov 0 => i;
+  mul TEXT_MODE_SIZE.0 TEXT_MODE_SIZE.1 => c;
+loop:
+  if !<lt i c> 'next' 'exit';
+next:
+  mod i TEXT_MODE_SIZE.0 => x;
+  div i TEXT_MODE_SIZE.0 => y;
+  chr 0u8 x y;
+  add i 1 => i;
+exit:
+}
+
+fn printc(value: u8) <t: i16> {
+print:
+  chr value TEXT_MODE_POS.0 TEXT_MODE_POS.1;
+  add TEXT_MODE_POS.0 1 => TEXT_MODE_POS.0;
+  if !<ge TEXT_MODE_POS.0 TEXT_MODE_SIZE.0> 'next_line' 'exit';
+next_line:
+  mov 0 => TEXT_MODE_POS.0;
+  add TEXT_MODE_POS.1 1 => TEXT_MODE_POS.1;
+  if !<ge TEXT_MODE_POS.1 TEXT_MODE_SIZE.1> 'reset_line' 'exit';
+reset_line:
+  mov 0 => TEXT_MODE_POS.1;
+exit:
+}
+
+fn prints(value: *u8) <t:i16> {
+loop:
+  b2i *<value> => t;
+  if t 'check_escaped' 'exit';
+check_escaped:
+  if !<eq t 92> 'do_escaped' 'print';
+do_escaped:
+  poff value 1 => value;
+  b2i *<value> => t;
+  poff value 1 => value;
+  if !<or !<eq t 110> !<eq t 114>> 'do_new_line' 'print';
+do_new_line:
+  pass @<println()>;
+  goto 'loop';
+print:
+  pass @<printc(*<value>)>;
+  poff value 1 => value;
+  goto 'loop';
+exit:
+}
+
+fn printi(value: i16) {
+  if !<lt value 0> 'print_minus' 'print_digit';
+print_minus:
+  pass @<printc(45)>;
+print_digit:
+  pass @<print_digit(@<abs(value)>)>;
+exit:
+}
+
+fn print_digit(value: i16) <t: i16> {
+  div value 10 => t;
+  if t 'print_digit' 'print';
+print_digit:
+  pass @<print_digit(t)>;
+print:
+  pass @<printc(!<add 48 !<mod value 10>>)>;
+}
+
+fn println() {
+  chr 0u8 TEXT_MODE_POS.0 TEXT_MODE_POS.1;
+  mov 0 => TEXT_MODE_POS.0;
+  add TEXT_MODE_POS.1 1 => TEXT_MODE_POS.1;
+if !<ge TEXT_MODE_POS.1 TEXT_MODE_SIZE.1> 'reset_line' 'exit';
+reset_line:
+  mov 0 => TEXT_MODE_POS.1;
+exit:
+}
+
+fn cursor_set(x: i16, y: i16) {
+  mov !<mod @<max(x, 0)> TEXT_MODE_SIZE.0> => TEXT_MODE_POS.0;
+  mov !<mod @<max(y, 0)> TEXT_MODE_SIZE.1> => TEXT_MODE_POS.1;
+}

@@ -1,0 +1,407 @@
+#![auto_integer_type('i16')];
+
+// size: 10
+struct Player {
+  x: i16,
+  y: i16,
+  anim: i16,
+  cooldown: i16,
+  lives: i16,
+}
+
+// size: 12
+struct Bullet {
+  x: i16,
+  y: i16,
+  anim: i16,
+  vspeed: i16,
+  alive: i16,
+  type: i16,
+}
+
+// size: 12
+struct Enemy {
+  x: i16,
+  y: i16,
+  cooldown: i16,
+  hspeed: i16,
+  alive: i16,
+  type: i16,
+}
+
+<
+  PLAYER: Player,
+  BULLETS: *Bullet,
+  BULLETS_COUNT: i16,
+  BULLETS_IDX: i16,
+  BULLETS_FREE: i16,
+  ENEMIES: *Enemy,
+  ENEMIES_COUNT: i16,
+  ENEMIES_IDX: i16,
+  ENEMIES_FREE: i16,
+  KEY_XR: i16,
+  KEY_GB: i16,
+  BG_Y: i16,
+>
+
+export fn main() <input: i16> {
+  mode 2;
+  pass @<init()>;
+
+  pass @<make_enemy(80, 8, -1, 0)>;
+  pass @<make_enemy(80, 24, 2, 0)>;
+  pass @<make_enemy(80, 40, -3, 0)>;
+
+loop:
+  inp => input;
+  if !<or !<and input 32> !<le PLAYER.lives 0>> 'exit' 'continue';
+continue:
+  pass @<update(input)>;
+  halt;
+  goto 'loop';
+exit:
+  free BULLETS;
+  free ENEMIES;
+}
+
+fn init() {
+  mov 0x00FF => KEY_XR;
+  mov 0x00FF => KEY_GB;
+  tlb KEY_XR KEY_GB;
+  bgc 0 0;
+
+  pass @<init_background()>;
+  pass @<init_player()>;
+  pass @<init_bullets()>;
+  pass @<init_enemies()>;
+}
+
+fn update(input: i16) {
+  pass @<update_background()>;
+  pass @<update_movement(input)>;
+  pass @<update_player(input)>;
+  pass @<update_bullets()>;
+  pass @<update_enemies()>;
+}
+
+fn init_background() <i: i16, x: i16, y: i16> {
+  mov 0 => BG_Y;
+  mov 0 => i;
+loop:
+  if !<lt i 160> 'next' 'exit';
+next:
+  mov !<mod i 20> => x;
+  mov !<div i 20> => y;
+  if !<gt !<mod !<rnd> 3> 0> 'place' 'increment';
+place:
+  tls 48 x y;
+  tls 48 x !<add y 8>;
+increment:
+  add i 1 => i;
+  goto 'loop';
+exit:
+}
+
+fn init_player() {
+  mov 80 => PLAYER.x;
+  mov 100 => PLAYER.y;
+  mov 0 => PLAYER.anim;
+  mov 0 => PLAYER.cooldown;
+  mov 1 => PLAYER.lives;
+  objs 0 3;
+  objs 1 9;
+  objb 0 KEY_XR KEY_GB;
+  objb 1 KEY_XR KEY_GB;
+}
+
+fn init_bullets() {
+  mov 30 => BULLETS_COUNT;
+  allc !<mul BULLETS_COUNT 12> => BULLETS;
+  mov BULLETS_IDX => 0;
+  mov BULLETS_COUNT => BULLETS_FREE;
+}
+
+fn init_enemies() {
+  mov 4 => ENEMIES_COUNT;
+  allc !<mul ENEMIES_COUNT 12> => ENEMIES;
+  mov ENEMIES_IDX => 0;
+  mov ENEMIES_COUNT => ENEMIES_FREE;
+}
+
+fn update_background() {
+  sub BG_Y 1 => BG_Y;
+  if !<lt BG_Y 0> 'reset' 'apply';
+reset:
+  mov 128 => BG_Y;
+apply:
+  tlv 0 BG_Y;
+}
+
+fn update_movement(inp: i16) {
+  objs 0 3;
+
+  if !<and inp 1> 'up' 'continue1';
+up:
+  sub PLAYER.y 2 => PLAYER.y;
+continue1:
+
+  if !<and inp 2> 'down' 'continue2';
+down:
+  add PLAYER.y 2 => PLAYER.y;
+continue2:
+
+  if !<and inp 4> 'left' 'continue3';
+left:
+  sub PLAYER.x 2 => PLAYER.x;
+  objs 0 1;
+continue3:
+
+  if !<and inp 8> 'right' 'exit';
+right:
+  add PLAYER.x 2 => PLAYER.x;
+  objs 0 5;
+exit:
+
+  mov @<clamp(PLAYER.x, 8, 152)> => PLAYER.x;
+  mov @<clamp(PLAYER.y, 8, 120)> => PLAYER.y;
+}
+
+fn update_player(input: i16) <b: i16> {
+  if !<and input 64> 'check_shoot' 'next';
+check_shoot:
+  if !<eq PLAYER.cooldown 0> 'shoot' 'next';
+shoot:
+  mov 10 => PLAYER.cooldown;
+  pass @<shoot_bullet(PLAYER.x, PLAYER.y, -4, 1)>;
+next:
+  mov @<clamp(!<sub PLAYER.cooldown 1>, 0, 10)> => PLAYER.cooldown;
+  mov @<collision_player_bullets()> => b;
+  if !<ge b 0> 'kill' 'apply';
+kill:
+  sub PLAYER.lives 1 => PLAYER.lives;
+apply:
+  objp 0 !<sub PLAYER.x 8> !<sub PLAYER.y 8>;
+  objp 1 !<sub PLAYER.x 8> !<add PLAYER.y 8>;
+  mod !<add PLAYER.anim 1> 30 => PLAYER.anim;
+  if !<mod !<div PLAYER.anim 5> 2> 'a' 'b';
+a:
+  objs 1 9;
+  ret;
+b:
+  objs 1 21;
+}
+
+fn update_bullets() <i: i16, s: i16, p: *Bullet> {
+  mov 0 => i;
+loop:
+  if !<lt i BULLETS_COUNT> 'continue' 'exit';
+continue:
+  add i 2 => s;
+  poff BULLETS !<mul i 12> => p;
+  if *<p>.alive 'update' 'next';
+update:
+  objp s !<sub *<p>.x 8> !<sub *<p>.y 8>;
+  add *<p>.y *<p>.vspeed => *<p>.y;
+  if !<or !<lt *<p>.y -16> !<gt *<p>.y 176>> 'dead' 'next';
+dead:
+  mov 0 => *<p>.alive;
+  objs s 0;
+  mov i => BULLETS_IDX;
+  add BULLETS_FREE 1 => BULLETS_FREE;
+next:
+  add i 1 => i;
+  goto 'loop';
+exit:
+}
+
+fn update_enemies() <i: i16, s: i16, p: *Enemy, b: i16, bp: *Bullet> {
+  mov 0 => i;
+loop:
+  if !<lt i ENEMIES_COUNT> 'continue' 'exit';
+continue:
+  add i !<add BULLETS_COUNT 2> => s;
+  poff ENEMIES !<mul i 12> => p;
+  if *<p>.alive 'update' 'next';
+update:
+  pass @<enemy_shoot(p)>;
+  mov @<collision_enemy_bullets(p)> => b;
+  if !<ge b 0> 'kill' 'apply';
+kill:
+  mov 0 => *<p>.alive;
+  objs !<add i !<add BULLETS_COUNT 2>> 0;
+  mov i => ENEMIES_IDX;
+  add ENEMIES_FREE 1 => ENEMIES_FREE;
+  poff BULLETS !<mul b 12> => bp;
+  mov 0 => *<bp>.alive;
+  objs !<add b 2> 0;
+  mov b => BULLETS_IDX;
+  add BULLETS_FREE 1 => BULLETS_FREE;
+apply:
+  objp s !<sub *<p>.x 8> !<sub *<p>.y 8>;
+  add *<p>.x *<p>.hspeed => *<p>.x;
+  if !<or !<le *<p>.x 0> !<ge *<p>.x 160>> 'flip' 'next';
+flip:
+  mov @<clamp(*<p>.x, 1, 159)> => *<p>.x;
+  mul *<p>.hspeed -1 => *<p>.hspeed;
+next:
+  add i 1 => i;
+  goto 'loop';
+exit:
+}
+
+fn enemy_shoot(enemy: *Enemy) {
+  if !<le *<enemy>.cooldown 0> 'shoot' 'exit';
+shoot:
+  mov 20 => *<enemy>.cooldown;
+  pass @<shoot_bullet(*<enemy>.x, *<enemy>.y, 2, 0)>;
+exit:
+  sub *<enemy>.cooldown 1 => *<enemy>.cooldown;
+}
+
+fn shoot_bullet(x: i16, y: i16, vspeed: i16, type: i16) <s: i16, p: *Bullet> {
+  mov BULLETS_IDX => s;
+  poff BULLETS !<mul s 12> => p;
+  if BULLETS_FREE 'find_free_bullet' 'use_bullet';
+find_free_bullet:
+  if !<eq *<p>.alive 0> 'use_bullet' 'continue';
+continue:
+  mod !<add s 1> BULLETS_COUNT => s;
+  poff BULLETS !<mul s 12> => p;
+  if !<eq BULLETS_IDX s> 'use_bullet' 'find_free_bullet';
+use_bullet:
+  mov x => *<p>.x;
+  mov y => *<p>.y;
+  mov 0 => *<p>.anim;
+  mov vspeed => *<p>.vspeed;
+  mov 1 => *<p>.alive;
+  mov type => *<p>.type;
+  sub BULLETS_FREE 1 => BULLETS_FREE;
+  mod !<add s 1> BULLETS_COUNT => BULLETS_IDX;
+  add s 2 => s;
+  objb s KEY_XR KEY_GB;
+  objp s !<sub x 8> !<sub y 8>;
+  if type 'spr0' 'spr1';
+spr0:
+  objs s 24;
+  ret;
+spr1:
+  objs s 18;
+}
+
+fn make_enemy(x: i16, y: i16, hspeed: i16, type: i16) <s: i16, p: *Enemy> {
+  mov ENEMIES_IDX => s;
+  poff ENEMIES !<mul s 12> => p;
+  if ENEMIES_FREE 'find_free_enemy' 'use_enemy';
+find_free_enemy:
+  if !<eq *<p>.alive 0> 'use_enemy' 'continue';
+continue:
+  mod !<add s 1> ENEMIES_COUNT => s;
+  poff ENEMIES !<mul s 12> => p;
+  if !<eq ENEMIES_IDX s> 'use_enemy' 'find_free_enemy';
+use_enemy:
+  mov x => *<p>.x;
+  mov y => *<p>.y;
+  mov 20 => *<p>.cooldown;
+  mov hspeed => *<p>.hspeed;
+  mov 1 => *<p>.alive;
+  mov type => *<p>.type;
+  sub ENEMIES_FREE 1 => ENEMIES_FREE;
+  mod !<add s 1> ENEMIES_COUNT => ENEMIES_IDX;
+  add s !<add BULLETS_COUNT 2> => s;
+  objb s KEY_XR KEY_GB;
+  objp s !<sub x 8> !<sub y 8>;
+  objs s 30;
+}
+
+fn clamp(v: i16, min: i16, max: i16): i16 {
+  if !<lt v min> 'low' 'next';
+low:
+  mov min => v;
+next:
+  if !<gt v max> 'high' 'exit';
+high:
+  mov max => v;
+exit:
+  mov v => _;
+}
+
+fn collision_player_bullets(): i16 <
+  i: i16,
+  p: *Bullet,
+  sp: (i16, i16, i16, i16),
+  sb: (i16, i16, i16, i16),
+  t: i16,
+> {
+  mov -1 => _;
+  mov 0 => i;
+  if BULLETS_FREE 'init' 'exit';
+init:
+  sub PLAYER.x 5 => sp.0;
+  sub PLAYER.y 5 => sp.1;
+  mov 10 => sp.2;
+  mov 10 => sp.3;
+loop:
+  if !<lt i BULLETS_COUNT> 'next' 'exit';
+next:
+  poff BULLETS !<mul i 12> => p;
+  if !<and *<p>.alive !<eq *<p>.type 0>> 'test' 'increment';
+test:
+  pass @<get_bullet_shape(p, &<sb>)>;
+  ovlp sp sb => t;
+  if t 'got' 'increment';
+got:
+  mov i => _;
+  ret;
+increment:
+  add i 1 => i;
+  goto 'loop';
+exit:
+}
+
+fn collision_enemy_bullets(e: *Enemy): i16 <
+  i: i16,
+  p: *Bullet,
+  se: (i16, i16, i16, i16),
+  sb: (i16, i16, i16, i16),
+  t: i16,
+> {
+  mov -1 => _;
+  mov 0 => i;
+  if BULLETS_FREE 'init' 'exit';
+init:
+  sub *<e>.x 5 => se.0;
+  sub *<e>.y 5 => se.1;
+  mov 10 => se.2;
+  mov 10 => se.3;
+loop:
+  if !<lt i BULLETS_COUNT> 'next' 'exit';
+next:
+  poff BULLETS !<mul i 12> => p;
+  if !<and *<p>.alive !<eq *<p>.type 1>> 'test' 'increment';
+test:
+  pass @<get_bullet_shape(p, &<sb>)>;
+  ovlp se sb => t;
+  if t 'got' 'increment';
+got:
+  mov i => _;
+  ret;
+increment:
+  add i 1 => i;
+  goto 'loop';
+exit:
+}
+
+fn get_bullet_shape(bullet: *Bullet, out: *(i16, i16, i16, i16)) {
+  if *<bullet>.type 'a' 'b';
+a:
+  sub *<bullet>.x 3 => *<out>.0;
+  sub *<bullet>.y 8 => *<out>.1;
+  mov 6 => *<out>.2;
+  mov 16 => *<out>.3;
+  ret;
+b:
+  sub *<bullet>.x 3 => *<out>.0;
+  sub *<bullet>.y 3 => *<out>.1;
+  mov 6 => *<out>.2;
+  mov 6 => *<out>.3;
+}

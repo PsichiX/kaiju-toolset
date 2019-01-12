@@ -1,0 +1,5 @@
+/*.sh
+/web
+/target
+**/*.rs.bk
+Cargo.lock

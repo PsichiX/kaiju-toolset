@@ -1,0 +1,19 @@
+[package]
+name = "kaiju-compiler-cli-core"
+version = "0.1.1"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Compiler CLI core module of modern assembly language toolset"
+repository = "https://github.com/PsichiX/kaiju-toolset"
+readme = "README.md"
+keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+categories = ["parser-implementations", "emulators"]
+license = "MIT"
+documentation = "https://docs.rs/kaiju-compiler-cli-core"
+
+[dependencies]
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+kaiju-compiler-core = { version = "0.1", path = "../kaiju-compiler-core" }
+libloading = "0.5"
+lazy_static = "1.2"
+relative-path = "0.4"

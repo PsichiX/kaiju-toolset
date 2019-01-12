@@ -1,0 +1,22 @@
+[package]
+name = "kaiju-compiler-cli"
+version = "0.1.1"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Compiler CLI module of modern assembly language toolset"
+repository = "https://github.com/PsichiX/kaiju-toolset"
+readme = "README.md"
+keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+categories = ["parser-implementations", "emulators"]
+license = "MIT"
+documentation = "https://docs.rs/kaiju-compiler-cli"
+
+[dependencies]
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+kaiju-compiler-core = { version = "0.1", path = "../kaiju-compiler-core" }
+kaiju-compiler-cli-core = { version = "0.1", path = "../kaiju-compiler-cli-core" }
+clap = "2.32"
+
+[[bin]]
+name = "ckaiju"
+path = "src/main.rs"

@@ -1,0 +1,32 @@
+# [package]
+# name = "kaiju"
+# version = "0.1.1"
+# authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+# edition = "2018"
+# description = "Modern assembly language toolset"
+# repository = "https://github.com/PsichiX/kaiju-toolset"
+# keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+# categories = ["parser-implementations", "emulators"]
+# license = "MIT"
+
+[workspace]
+members = [
+  "kaiju-core",
+  "kaiju-compiler-core",
+  "kaiju-compiler-cli-core",
+  "kaiju-compiler-cli",
+  "kaiju-vm-core",
+  "kaiju-vm-cli",
+]
+exclude = [
+  "demo-emulator",
+  "web",
+]
+
+# [dependencies]
+# kaiju-core = { version = "0.1", path = "kaiju-core", optional = true }
+# kaiju-compiler-core = { version = "0.1", path = "kaiju-compiler-core", optional = true }
+# kaiju-compiler-cli-core = { version = "0.1", path = "kaiju-compiler-cli-core", optional = true }
+# kaiju-compiler-cli = { version = "0.1", path = "kaiju-compiler-cli", optional = true }
+# kaiju-vm-core = { version = "0.1", path = "kaiju-vm-core", optional = true }
+# kaiju-vm-cli = { version = "0.1", path = "kaiju-vm-cli", optional = true }
