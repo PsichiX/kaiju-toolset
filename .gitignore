@@ -1,5 +1,8 @@
 /*.sh
+/*.bat
 /web
 /target
+/toolset
+/demo
 **/*.rs.bk
 Cargo.lock

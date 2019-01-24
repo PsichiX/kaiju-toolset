@@ -1,0 +1,231 @@
+[tasks.all]
+dependencies = [
+  "toolset",
+  "update-unity-dependencies",
+]
+
+[tasks.toolset]
+dependencies = [
+  "build",
+  "toolset-cleanup",
+  "toolset-produce",
+  "build-compiler-capi",
+  "build-vm-capi",
+  "build-dotnet-wrapper",
+  "toolset-post-produce",
+]
+
+[tasks.build]
+dependencies = [
+  "build-debug",
+  "build-release",
+]
+
+[tasks.build-debug]
+command = "cargo"
+args = [
+  "build",
+  "--all",
+]
+
+[tasks.build-release]
+command = "cargo"
+args = [
+  "build",
+  "--all",
+  "--release",
+]
+
+[tasks.build-compiler-capi-h]
+command = "cbindgen"
+args = [
+  "kaiju-compiler-capi",
+  "-l",
+  "c",
+  "-o",
+  "toolset/include/kaiju_compiler_capi.h",
+]
+
+[tasks.build-compiler-capi-hpp]
+command = "cbindgen"
+args = [
+  "kaiju-compiler-capi",
+  "-l",
+  "c++",
+  "-o",
+  "toolset/include/kaiju_compiler_capi.hpp",
+]
+
+[tasks.build-compiler-capi]
+dependencies = [
+  "build-compiler-capi-h",
+  "build-compiler-capi-hpp",
+]
+
+[tasks.build-vm-capi-h]
+command = "cbindgen"
+args = [
+  "kaiju-vm-capi",
+  "-l",
+  "c",
+  "-o",
+  "toolset/include/kaiju_vm_capi.h",
+]
+
+[tasks.build-vm-capi-hpp]
+command = "cbindgen"
+args = [
+  "kaiju-vm-capi",
+  "-l",
+  "c++",
+  "-o",
+  "toolset/include/kaiju_vm_capi.hpp",
+]
+
+[tasks.build-vm-capi]
+dependencies = [
+  "build-vm-capi-h",
+  "build-vm-capi-hpp",
+]
+
+[tasks.build-dotnet-wrapper]
+dependencies = [
+  "build-dotnet-wrapper-debug",
+  "build-dotnet-wrapper-release",
+]
+
+[tasks.build-dotnet-wrapper-debug]
+script = [
+  "$MSBUILD_BIN ./dotnet/Kaiju.NET.sln /t:Build /p:Configuration=Debug"
+]
+
+[tasks.build-dotnet-wrapper-debug.windows]
+script = [
+  "%MSBUILD_BIN% ./dotnet/Kaiju.NET.sln /t:Build /p:Configuration=Debug"
+]
+
+[tasks.build-dotnet-wrapper-release]
+script = [
+  "$MSBUILD_BIN ./dotnet/Kaiju.NET.sln /t:Build /p:Configuration=Release"
+]
+
+[tasks.build-dotnet-wrapper-release.windows]
+script = [
+  "%MSBUILD_BIN% ./dotnet/Kaiju.NET.sln /t:Build /p:Configuration=Release"
+]
+
+[tasks.toolset-cleanup]
+script = [
+  '''
+  echo "* cleanup toolset"
+  rm -rf toolset
+  mkdir -p toolset/bin
+  mkdir -p toolset/lib
+  mkdir -p toolset/lib/debug
+  mkdir -p toolset/lib/release
+  mkdir -p toolset/include
+  '''
+]
+
+[tasks.toolset-cleanup.windows]
+script = [
+  '''
+  echo "* cleanup toolset"
+  rmdir /s /q "%CD%"\toolset
+  mkdir "%CD%"\toolset\bin
+  mkdir "%CD%"\toolset\lib
+  mkdir "%CD%"\toolset\lib\debug
+  mkdir "%CD%"\toolset\lib\release
+  mkdir "%CD%"\toolset\include
+  '''
+]
+
+[tasks.toolset-produce]
+script = [
+  '''
+  echo "* produce toolset"
+  cp target/release/ckaiju toolset/bin/ckaiju
+  cp target/debug/ckaiju toolset/bin/ckaiju-d
+  cp target/release/keijo toolset/bin/keijo
+  cp target/debug/keijo toolset/bin/keijo-d
+  cp target/debug/kaiju_compiler_capi.a toolset/lib/debug/kaiju_compiler_capi.a
+  cp target/debug/kaiju_compiler_capi.so toolset/lib/debug/kaiju_compiler_capi.so
+  cp target/debug/kaiju_compiler_capi.so.a toolset/lib/debug/kaiju_compiler_capi.so.a
+  cp target/release/kaiju_compiler_capi.a toolset/lib/release/kaiju_compiler_capi.a
+  cp target/release/kaiju_compiler_capi.so toolset/lib/release/kaiju_compiler_capi.so
+  cp target/release/kaiju_compiler_capi.so.a toolset/lib/release/kaiju_compiler_capi.so.a
+  cp target/debug/kaiju_vm_capi.a toolset/lib/debug/kaiju_vm_capi.a
+  cp target/debug/kaiju_vm_capi.so toolset/lib/debug/kaiju_vm_capi.so
+  cp target/debug/kaiju_vm_capi.so.a toolset/lib/debug/kaiju_vm_capi.so.a
+  cp target/release/kaiju_vm_capi.a toolset/lib/release/kaiju_vm_capi.a
+  cp target/release/kaiju_vm_capi.so toolset/lib/release/kaiju_vm_capi.so
+  cp target/release/kaiju_vm_capi.so.a toolset/lib/release/kaiju_vm_capi.so.a
+  '''
+]
+
+[tasks.toolset-produce.windows]
+script = [
+  '''
+  echo "* produce toolset"
+  copy "%CD%"\target\release\ckaiju.exe "%CD%"\toolset\bin\ckaiju.exe
+  copy "%CD%"\target\debug\ckaiju.exe "%CD%"\toolset\bin\ckaiju-d.exe
+  copy "%CD%"\target\release\keijo.exe "%CD%"\toolset\bin\keijo.exe
+  copy "%CD%"\target\debug\keijo.exe "%CD%"\toolset\bin\keijo-d.exe
+  copy "%CD%"\target\debug\kaiju_compiler_capi.lib "%CD%"\toolset\lib\debug\kaiju_compiler_capi.lib
+  copy "%CD%"\target\debug\kaiju_compiler_capi.dll "%CD%"\toolset\lib\debug\kaiju_compiler_capi.dll
+  copy "%CD%"\target\debug\kaiju_compiler_capi.dll.lib "%CD%"\toolset\lib\debug\kaiju_compiler_capi.dll.lib
+  copy "%CD%"\target\release\kaiju_compiler_capi.lib "%CD%"\toolset\lib\release\kaiju_compiler_capi.lib
+  copy "%CD%"\target\release\kaiju_compiler_capi.dll "%CD%"\toolset\lib\release\kaiju_compiler_capi.dll
+  copy "%CD%"\target\release\kaiju_compiler_capi.dll.lib "%CD%"\toolset\lib\release\kaiju_compiler_capi.dll.lib
+  copy "%CD%"\target\debug\kaiju_vm_capi.lib "%CD%"\toolset\lib\debug\kaiju_vm_capi.lib
+  copy "%CD%"\target\debug\kaiju_vm_capi.dll "%CD%"\toolset\lib\debug\kaiju_vm_capi.dll
+  copy "%CD%"\target\debug\kaiju_vm_capi.dll.lib "%CD%"\toolset\lib\debug\kaiju_vm_capi.dll.lib
+  copy "%CD%"\target\release\kaiju_vm_capi.lib "%CD%"\toolset\lib\release\kaiju_vm_capi.lib
+  copy "%CD%"\target\release\kaiju_vm_capi.dll "%CD%"\toolset\lib\release\kaiju_vm_capi.dll
+  copy "%CD%"\target\release\kaiju_vm_capi.dll.lib "%CD%"\toolset\lib\release\kaiju_vm_capi.dll.lib
+  '''
+]
+
+[tasks.toolset-post-produce]
+script = [
+  '''
+  echo "* post produce toolset"
+  cp -r dotnet/Kaiju.Compiler.NET/bin/Debug/netstandard2.0 toolset/lib/debug/
+  cp -r dotnet/Kaiju.Compiler.NET/bin/Release/netstandard2.0 toolset/lib/release/
+  cp -r dotnet/Kaiju.VirtualMachine.NET/bin/Debug/netstandard2.0 toolset/lib/debug/
+  cp -r dotnet/Kaiju.VirtualMachine.NET/bin/Release/netstandard2.0 toolset/lib/release/
+  '''
+]
+
+[tasks.toolset-post-produce.windows]
+script = [
+  '''
+  echo "* post produce toolset"
+  xcopy "%CD%"\dotnet\Kaiju.Compiler.NET\bin\Debug\netstandard2.0 "%CD%"\toolset\lib\debug\
+  xcopy "%CD%"\dotnet\Kaiju.Compiler.NET\bin\Release\netstandard2.0 "%CD%"\toolset\lib\release\
+  xcopy "%CD%"\dotnet\Kaiju.VirtualMachine.NET\bin\Debug\netstandard2.0 "%CD%"\toolset\lib\debug\
+  xcopy "%CD%"\dotnet\Kaiju.VirtualMachine.NET\bin\Release\netstandard2.0 "%CD%"\toolset\lib\release\
+  '''
+]
+
+[tasks.update-unity-dependencies]
+script = [
+  '''
+  echo "* update unity dependencies"
+  cp -f target/release/kaiju_compiler_capi.so unity/Kaiju.Unity/Assets/Kaiju/Plugins/kaiju_compiler_capi.so
+  cp -f target/release/kaiju_vm_capi.so unity/Kaiju.Unity/Assets/Kaiju/Plugins/kaiju_vm_capi.so
+  cp -f dotnet/Kaiju.Compiler.NET/bin/Release/netstandard2.0/Kaiju.Compiler.NET.dll unity/Kaiju.Unity/Assets/Kaiju/Plugins/Kaiju.Compiler.NET.dll
+  cp -f dotnet/Kaiju.VirtualMachine.NET/bin/Release/netstandard2.0/Kaiju.VirtualMachine.NET.dll unity/Kaiju.Unity/Assets/Kaiju/Plugins/Kaiju.VirtualMachine.NET.dll
+  '''
+]
+
+[tasks.update-unity-dependencies.windows]
+script = [
+  '''
+  echo "* update unity dependencies"
+  copy "%CD%"\target\release\kaiju_compiler_capi.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\kaiju_compiler_capi.dll
+  copy "%CD%"\target\release\kaiju_vm_capi.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\kaiju_vm_capi.dll
+  copy "%CD%"\dotnet\Kaiju.Compiler.NET\bin\Release\netstandard2.0\Kaiju.Compiler.NET.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\Kaiju.Compiler.NET.dll
+  copy "%CD%"\dotnet\Kaiju.VirtualMachine.NET\bin\Release\netstandard2.0\Kaiju.VirtualMachine.NET.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\Kaiju.VirtualMachine.NET.dll
+  '''
+]

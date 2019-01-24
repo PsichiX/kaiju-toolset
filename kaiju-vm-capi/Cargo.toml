@@ -1,0 +1,22 @@
+[package]
+name = "kaiju-vm-capi"
+version = "0.1.2"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Virtual machine C-API library of modern assembly language toolset"
+repository = "https://github.com/PsichiX/kaiju-toolset"
+readme = "README.md"
+keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+categories = ["parser-implementations", "emulators"]
+license = "MIT"
+documentation = "https://docs.rs/kaiju-vm-capi"
+
+[dependencies]
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+kaiju-vm-core = { version = "0.1", path = "../kaiju-vm-core" }
+libc = "0.2"
+lazy_static = "1.2"
+
+[lib]
+name = "kaiju_vm_capi"
+crate-type = ["cdylib", "staticlib"]

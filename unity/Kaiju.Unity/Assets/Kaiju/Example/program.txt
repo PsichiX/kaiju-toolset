@@ -1,0 +1,13 @@
+﻿export fn main() {
+	movx 3;
+	movy 4;
+	movx 5;
+	movy -2;
+	movx -3;
+	movy -2;
+	movx 3;
+	movy -2;
+	movx -3;
+	movy -4;
+	movx 2;
+}

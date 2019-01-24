@@ -1,6 +1,7 @@
 use crate::vm::Vm;
 use core::error::*;
 
+#[derive(Debug, Copy, Clone)]
 pub enum OpAction {
     None,
     GoTo(usize),

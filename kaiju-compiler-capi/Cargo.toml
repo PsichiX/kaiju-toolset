@@ -1,0 +1,22 @@
+[package]
+name = "kaiju-compiler-capi"
+version = "0.1.2"
+authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
+edition = "2018"
+description = "Compiler C-API library of modern assembly language toolset"
+repository = "https://github.com/PsichiX/kaiju-toolset"
+readme = "README.md"
+keywords = ["assembly", "language", "toolset", "script", "virtual-machine"]
+categories = ["parser-implementations", "emulators"]
+license = "MIT"
+documentation = "https://docs.rs/kaiju-compiler-capi"
+
+[dependencies]
+kaiju-core = { version = "0.1", path = "../kaiju-core" }
+kaiju-compiler-core = { version = "0.1", path = "../kaiju-compiler-core" }
+libc = "0.2"
+relative-path = "0.4"
+
+[lib]
+name = "kaiju_compiler_capi"
+crate-type = ["cdylib", "staticlib"]

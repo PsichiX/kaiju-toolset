@@ -1,6 +1,6 @@
 # [package]
 # name = "kaiju"
-# version = "0.1.1"
+# version = "0.1.2"
 # authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
 # edition = "2018"
 # description = "Modern assembly language toolset"
@@ -17,6 +17,8 @@ members = [
   "kaiju-compiler-cli",
   "kaiju-vm-core",
   "kaiju-vm-cli",
+  "kaiju-compiler-capi",
+  "kaiju-vm-capi",
 ]
 exclude = [
   "demo-emulator",
@@ -30,3 +32,5 @@ exclude = [
 # kaiju-compiler-cli = { version = "0.1", path = "kaiju-compiler-cli", optional = true }
 # kaiju-vm-core = { version = "0.1", path = "kaiju-vm-core", optional = true }
 # kaiju-vm-cli = { version = "0.1", path = "kaiju-vm-cli", optional = true }
+# kaiju-compiler-capi = { version = "0.1", path = "kaiju-compiler-capi", optional = true }
+# kaiju-vm-capi = { version = "0.1", path = "kaiju-vm-capi", optional = true }

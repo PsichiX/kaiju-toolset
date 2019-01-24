@@ -59,6 +59,11 @@ impl State {
     }
 
     #[inline]
+    pub fn all_size(&self) -> usize {
+        self.stack_size + self.memory_size
+    }
+
+    #[inline]
     pub fn stack_pos(&self) -> usize {
         self.stack_pos
     }
@@ -330,6 +335,30 @@ impl State {
         } else {
             Ok(&mut self.bytes[value.address..value.address + value.size])
         }
+    }
+
+    pub fn map_stack(&self) -> &[u8] {
+        &self.bytes[0..self.stack_size]
+    }
+
+    pub fn map_stack_mut(&mut self) -> &mut [u8] {
+        &mut self.bytes[0..self.stack_size]
+    }
+
+    pub fn map_memory(&self) -> &[u8] {
+        &self.bytes[self.stack_size..]
+    }
+
+    pub fn map_memory_mut(&mut self) -> &mut [u8] {
+        &mut self.bytes[self.stack_size..]
+    }
+
+    pub fn map_all(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    pub fn map_all_mut(&mut self) -> &mut [u8] {
+        &mut self.bytes
     }
 
     pub fn alloc_stack_value(&mut self, size: usize) -> SimpleResult<Value> {
