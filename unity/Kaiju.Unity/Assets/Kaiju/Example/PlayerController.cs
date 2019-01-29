@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody m_rigidBody;
     [SerializeField]
     private TextAsset m_codeContents;
+    [SerializeField]
+    private float m_speed = 1;
 
     private FileMap m_files = new FileMap();
     private UIntPtr? m_program;
@@ -149,7 +151,7 @@ public class PlayerController : MonoBehaviour
         }
         while (time > 0)
         {
-            var dt = Time.smoothDeltaTime;
+            var dt = Time.smoothDeltaTime * m_speed;
             time -= dt;
             m_rigidBody.MovePosition(m_rigidBody.position + new Vector3(x, 0, y) * dt);
             yield return new WaitForEndOfFrame();

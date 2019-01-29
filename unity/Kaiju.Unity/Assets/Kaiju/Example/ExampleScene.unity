@@ -1545,6 +1545,7 @@ MonoBehaviour:
   m_stopButton: {fileID: 768706456}
   m_rigidBody: {fileID: 918130535}
   m_codeContents: {fileID: 4900000, guid: 5e5ea73eac18e604ca38714bb7a39436, type: 3}
+  m_speed: 4
 --- !u!54 &918130535
 Rigidbody:
   m_ObjectHideFlags: 0
