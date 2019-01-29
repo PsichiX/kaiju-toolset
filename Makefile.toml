@@ -331,20 +331,20 @@ script = [
 
 [tasks.archive-toolset]
 script = [
-  '''$SEVENZIP_BIN a -tzip toolset/kaiju-toolset-${KAIJU_VERSION}.zip toolset/*'''
+  '''$SEVENZIP_BIN a -tzip toolset/kaiju-toolset-${KAIJU_VERSION}-lin64.zip toolset/*'''
 ]
 
 [tasks.archive-toolset.windows]
 script = [
-  '''%SEVENZIP_BIN% a -tzip "%CD%\toolset\kaiju-toolset-%KAIJU_VERSION%.zip" "%CD%\toolset\*"'''
+  '''%SEVENZIP_BIN% a -tzip "%CD%\toolset\kaiju-toolset-%KAIJU_VERSION%-win64.zip" "%CD%\toolset\*"'''
 ]
 
 [tasks.archive-demo-emulator]
 script = [
-  '''$SEVENZIP_BIN a -tzip demo/demo-emulator-${KAIJU_VERSION}.zip demo/*'''
+  '''$SEVENZIP_BIN a -tzip demo/demo-emulator-${KAIJU_VERSION}-lin64.zip demo/*'''
 ]
 
 [tasks.archive-demo-emulator.windows]
 script = [
-  '''%SEVENZIP_BIN% a -tzip "%CD%\demo\demo-emulator-%KAIJU_VERSION%.zip" "%CD%\demo\*"'''
+  '''%SEVENZIP_BIN% a -tzip "%CD%\demo\demo-emulator-%KAIJU_VERSION%-win64.zip" "%CD%\demo\*"'''
 ]
