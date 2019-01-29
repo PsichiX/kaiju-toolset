@@ -1,7 +1,7 @@
 [tasks.all]
 dependencies = [
   "toolset",
-  "unity-package",
+  "demo-emulator",
 ]
 
 [tasks.toolset]
@@ -13,6 +13,8 @@ dependencies = [
   "build-vm-capi",
   "build-dotnet-wrapper",
   "toolset-post-produce",
+  "unity-package",
+  "archive-toolset",
 ]
 
 [tasks.build]
@@ -244,4 +246,105 @@ script = [
 [tasks.build-unity-package.windows]
 script = [
   '''%UNITY_BIN% -projectPath "%CD%\unity\Kaiju.Unity\" -quit -batchmode -exportPackage Assets\Kaiju ..\..\toolset\kaiju.unitypackage'''
+]
+
+[tasks.demo-emulator]
+dependencies = [
+  "build-demo-emulator",
+  "demo-cleanup",
+  "produce-demo-emulator",
+  "archive-demo-emulator",
+]
+
+[tasks.build-demo-emulator]
+dependencies = [
+  "build-demo-emulator-debug",
+  "build-demo-emulator-release",
+]
+
+[tasks.build-demo-emulator-debug]
+command = "cargo"
+args = [
+  "build",
+  "--manifest-path",
+  "demo-emulator/Cargo.toml",
+]
+
+[tasks.build-demo-emulator-release]
+command = "cargo"
+args = [
+  "build",
+  "--manifest-path",
+  "demo-emulator/Cargo.toml",
+  "--release",
+]
+
+[tasks.demo-cleanup]
+script = [
+  '''
+  echo "* cleanup demo"
+  rm -rf demo
+  mkdir -p demo
+  mkdir -p demo/res
+  '''
+]
+
+[tasks.demo-cleanup.windows]
+script = [
+  '''
+  echo "* cleanup demo"
+  rmdir /s /q "%CD%"\demo
+  mkdir "%CD%"\demo
+  mkdir "%CD%"\demo\res
+  '''
+]
+
+[tasks.produce-demo-emulator]
+script = [
+  '''
+  echo "* produce demo"
+  cp demo-emulator/target/release/cartridge demo/cartridge
+  cp demo-emulator/target/debug/cartridge demo/cartridge-d
+  cp demo-emulator/target/release/console demo/console
+  cp demo-emulator/target/debug/console demo/console-d
+  cp demo-emulator/target/release/fontgen demo/fontgen
+  cp demo-emulator/target/debug/fontgen demo/fontgen-d
+  cp -r demo-emulator/res demo/res/
+  cp demo-emulator/scripts/run.sh demo/run.sh
+  '''
+]
+
+[tasks.produce-demo-emulator.windows]
+script = [
+  '''
+  echo "* produce demo"
+  copy "%CD%"\demo-emulator\target\release\cartridge.exe "%CD%"\demo\cartridge.exe
+  copy "%CD%"\demo-emulator\target\debug\cartridge.exe "%CD%"\demo\cartridge-d.exe
+  copy "%CD%"\demo-emulator\target\release\console.exe "%CD%"\demo\console.exe
+  copy "%CD%"\demo-emulator\target\debug\console.exe "%CD%"\demo\console-d.exe
+  copy "%CD%"\demo-emulator\target\release\fontgen.exe "%CD%"\demo\fontgen.exe
+  copy "%CD%"\demo-emulator\target\debug\fontgen.exe "%CD%"\demo\fontgen-d.exe
+  xcopy "%CD%"\demo-emulator\res "%CD%"\demo\res\
+  copy "%CD%"\demo-emulator\scripts\run.bat "%CD%"\demo\run.bat
+  '''
+]
+
+[tasks.archive-toolset]
+script = [
+  '''$SEVENZIP_BIN a -tzip toolset/kaiju-toolset-${KAIJU_VERSION}.zip toolset/*'''
+]
+
+[tasks.archive-toolset.windows]
+script = [
+  '''%SEVENZIP_BIN% a -tzip "%CD%\toolset\kaiju-toolset-%KAIJU_VERSION%.zip" "%CD%\toolset\*"'''
+]
+
+[tasks.archive-demo-emulator]
+script = [
+  '''$SEVENZIP_BIN a -tzip demo/demo-emulator-${KAIJU_VERSION}.zip demo/*'''
+]
+
+[tasks.archive-demo-emulator.windows]
+script = [
+  '''%SEVENZIP_BIN% a -tzip "%CD%\demo\demo-emulator-%KAIJU_VERSION%.zip" "%CD%\demo\*"'''
 ]
