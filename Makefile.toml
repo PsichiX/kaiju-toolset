@@ -1,7 +1,7 @@
 [tasks.all]
 dependencies = [
   "toolset",
-  "update-unity-dependencies",
+  "unity-package",
 ]
 
 [tasks.toolset]
@@ -208,6 +208,12 @@ script = [
   '''
 ]
 
+[tasks.unity-package]
+dependencies = [
+  "update-unity-dependencies",
+  "build-unity-package",
+]
+
 [tasks.update-unity-dependencies]
 script = [
   '''
@@ -228,4 +234,14 @@ script = [
   copy "%CD%"\dotnet\Kaiju.Compiler.NET\bin\Release\netstandard2.0\Kaiju.Compiler.NET.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\Kaiju.Compiler.NET.dll
   copy "%CD%"\dotnet\Kaiju.VirtualMachine.NET\bin\Release\netstandard2.0\Kaiju.VirtualMachine.NET.dll "%CD%"\unity\Kaiju.Unity\Assets\Kaiju\Plugins\Kaiju.VirtualMachine.NET.dll
   '''
+]
+
+[tasks.build-unity-package]
+script = [
+  '''$UNITY_BIN -projectPath "unity/Kaiju.Unity/" -quit -batchmode -exportPackage Assets/Kaiju ../../toolset/kaiju.unitypackage'''
+]
+
+[tasks.build-unity-package.windows]
+script = [
+  '''%UNITY_BIN% -projectPath "%CD%\unity\Kaiju.Unity\" -quit -batchmode -exportPackage Assets\Kaiju ..\..\toolset\kaiju.unitypackage'''
 ]
