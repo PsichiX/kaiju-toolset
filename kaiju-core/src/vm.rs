@@ -8,7 +8,7 @@ use std::fmt;
 use std::io::{Cursor, Read, Seek, SeekFrom};
 use std::mem::size_of;
 
-fn read_string(stream: &mut Read) -> SimpleResult<String> {
+fn read_string(stream: &mut dyn Read) -> SimpleResult<String> {
     let size = stream.read_u64::<BigEndian>()? as usize;
     let mut bytes = vec![0; size];
     stream.read(&mut bytes)?;
@@ -18,7 +18,7 @@ fn read_string(stream: &mut Read) -> SimpleResult<String> {
     }
 }
 
-fn read_type(stream: &mut Read) -> SimpleResult<Type> {
+fn read_type(stream: &mut dyn Read) -> SimpleResult<Type> {
     let mode = stream.read_u8()?;
     match mode {
         0 => {
@@ -38,7 +38,7 @@ fn read_type(stream: &mut Read) -> SimpleResult<Type> {
     }
 }
 
-fn read_variable(stream: &mut Read) -> SimpleResult<Variable> {
+fn read_variable(stream: &mut dyn Read) -> SimpleResult<Variable> {
     let index = stream.read_u64::<BigEndian>()? as usize;
     let typeid = read_type(stream)?;
     let size = stream.read_u64::<BigEndian>()? as usize;

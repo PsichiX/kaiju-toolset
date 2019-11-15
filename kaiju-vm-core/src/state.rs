@@ -78,6 +78,11 @@ impl State {
         self.memory_free.iter().map(|(_, c)| c).sum()
     }
 
+    #[inline]
+    pub fn all_free(&self) -> usize {
+        self.stack_free() + self.memory_free()
+    }
+
     pub fn stack_push_data<T>(&mut self, value: &T) -> SimpleResult<Value> {
         let size = size_of::<T>();
         if self.stack_pos + size > self.stack_size {

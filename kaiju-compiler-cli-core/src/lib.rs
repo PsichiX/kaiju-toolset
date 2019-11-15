@@ -24,7 +24,9 @@ pub fn load_opdescs(paths: &[String]) -> SimpleResult<OpsDescriptor> {
             match read_to_string(&path) {
                 Ok(desc) => match compile_ops_descriptor(&desc) {
                     Ok(desc) => descs.push(desc),
-                    Err(err) => return Err(SimpleError::new(format!("{:?}: {}", path, err.pretty))),
+                    Err(err) => {
+                        return Err(SimpleError::new(format!("{:?}: {}", path, err.pretty)))
+                    }
                 },
                 Err(err) => return Err(SimpleError::new(format!("{:?}: {}", path, err))),
             }

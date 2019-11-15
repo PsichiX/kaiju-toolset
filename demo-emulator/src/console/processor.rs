@@ -222,7 +222,7 @@ impl VmProcessor for Processor {
             }
             "free" => {
                 let address = vm.state().load_data::<usize>(params[0])?;
-                let size = vm.state().load_data::<u16>(address - 2)?;
+                let size = vm.state().load_data::<u16>(address - 2)? + 2;
                 vm.state_mut()
                     .dealloc_memory_value(&Value::new(address - 2, size as usize))?;
                 Ok(OpAction::None)

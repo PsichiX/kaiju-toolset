@@ -1,3 +1,5 @@
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
+
 extern crate kaiju_compiler_core as compiler_core;
 extern crate kaiju_core as core;
 extern crate libc;
@@ -119,7 +121,7 @@ pub extern "C" fn kaiju_compile_program_bin(
                     Ok(program) => match encode_assembly(&program, &desc) {
                         Ok(bytes) => {
                             result_file(result_context, bytes.as_ptr(), bytes.len());
-                            return true;
+                            true
                         }
                         Err(err) => {
                             let err = CString::new(err.message).unwrap();
@@ -159,14 +161,18 @@ pub fn bytes_from_raw(source: *const libc::c_uchar, size: usize) -> Vec<u8> {
     }
     let mut result = vec![0; size];
     let target = result.as_mut_ptr();
-    unsafe { copy_nonoverlapping(source, target, size) };
+    unsafe {
+        copy_nonoverlapping(source, target, size);
+    }
     result
 }
 
 pub fn string_from_raw(source: *const libc::c_uchar, size: usize) -> String {
     let bytes = bytes_from_raw(source, size);
-    let cstring = unsafe { CString::from_vec_unchecked(bytes) };
-    cstring.into_string().unwrap()
+    unsafe {
+        let cstring = CString::from_vec_unchecked(bytes);
+        cstring.into_string().unwrap()
+    }
 }
 
 pub fn string_from_raw_unsized(mut source: *const libc::c_uchar) -> String {
@@ -179,7 +185,7 @@ pub fn string_from_raw_unsized(mut source: *const libc::c_uchar) -> String {
             bytes.push(*source);
             source = source.add(1);
         }
+        let cstring = CString::from_vec_unchecked(bytes);
+        cstring.into_string().unwrap()
     }
-    let cstring = unsafe { CString::from_vec_unchecked(bytes) };
-    cstring.into_string().unwrap()
 }

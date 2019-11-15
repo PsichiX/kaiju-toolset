@@ -107,7 +107,11 @@ pub fn encode_assembly(program: &CoreProgram, ops: &OpsDescriptor) -> SimpleResu
     assembly.to_bytes(ops)
 }
 
-fn write_core_type(typeid: &CoreType, stream: &mut Write, assembly: &Assembly) -> SimpleResult<()> {
+fn write_core_type(
+    typeid: &CoreType,
+    stream: &mut dyn Write,
+    assembly: &Assembly,
+) -> SimpleResult<()> {
     match typeid {
         CoreType::Identifier(id) => {
             stream.write_u8(0)?;
@@ -133,7 +137,7 @@ fn write_core_type(typeid: &CoreType, stream: &mut Write, assembly: &Assembly) -
     Ok(())
 }
 
-fn write_string(value: &str, stream: &mut Write) -> SimpleResult<()> {
+fn write_string(value: &str, stream: &mut dyn Write) -> SimpleResult<()> {
     stream.write_u64::<BigEndian>(value.as_bytes().len() as u64)?;
     stream.write(value.as_bytes())?;
     Ok(())
@@ -683,7 +687,7 @@ impl Assembly {
         &self,
         value: &CoreValue,
         opsdesc: &OpsDescriptor,
-        stream: &mut Write,
+        stream: &mut dyn Write,
         ops: &mut OpsMap,
         index: &mut u64,
     ) -> SimpleResult<()> {
@@ -1232,7 +1236,7 @@ impl StructField {
         })
     }
 
-    pub fn write(&self, stream: &mut Write, assembly: &Assembly) -> SimpleResult<()> {
+    pub fn write(&self, stream: &mut dyn Write, assembly: &Assembly) -> SimpleResult<()> {
         write_core_type(&self.typeid, stream, assembly)?;
         stream.write_u64::<BigEndian>(self.offset as u64)?;
         stream.write_u64::<BigEndian>(self.size as u64)?;
@@ -1299,7 +1303,7 @@ impl Variable {
         Ok(stream.into_inner())
     }
 
-    pub fn write(&self, stream: &mut Write, assembly: &Assembly) -> SimpleResult<()> {
+    pub fn write(&self, stream: &mut dyn Write, assembly: &Assembly) -> SimpleResult<()> {
         stream.write(&self.to_bytes(assembly)?)?;
         Ok(())
     }

@@ -160,7 +160,7 @@ impl Vm {
 
     #[inline]
     pub fn from_stream(
-        stream: &mut Read,
+        stream: &mut dyn Read,
         stack_size: usize,
         memory_size: usize,
     ) -> SimpleResult<Self> {

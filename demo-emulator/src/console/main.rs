@@ -1,3 +1,5 @@
+#![allow(clippy::cast_ref_to_mut)]
+
 extern crate byteorder;
 extern crate clap;
 extern crate kaiju_core as core;
