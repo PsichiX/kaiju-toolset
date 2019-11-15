@@ -303,12 +303,12 @@ script = [
 script = [
   '''
   echo "* produce demo"
-  cp demo-emulator/target/release/cartridge demo/cartridge
-  cp demo-emulator/target/debug/cartridge demo/cartridge-d
-  cp demo-emulator/target/release/console demo/console
-  cp demo-emulator/target/debug/console demo/console-d
-  cp demo-emulator/target/release/fontgen demo/fontgen
-  cp demo-emulator/target/debug/fontgen demo/fontgen-d
+  cp target/release/cartridge demo/cartridge
+  cp target/debug/cartridge demo/cartridge-d
+  cp target/release/console demo/console
+  cp target/debug/console demo/console-d
+  cp target/release/fontgen demo/fontgen
+  cp target/debug/fontgen demo/fontgen-d
   cp -r demo-emulator/res demo/res/
   cp demo-emulator/scripts/run.sh demo/run.sh
   '''
@@ -318,12 +318,12 @@ script = [
 script = [
   '''
   echo "* produce demo"
-  copy "%CD%"\demo-emulator\target\release\cartridge.exe "%CD%"\demo\cartridge.exe
-  copy "%CD%"\demo-emulator\target\debug\cartridge.exe "%CD%"\demo\cartridge-d.exe
-  copy "%CD%"\demo-emulator\target\release\console.exe "%CD%"\demo\console.exe
-  copy "%CD%"\demo-emulator\target\debug\console.exe "%CD%"\demo\console-d.exe
-  copy "%CD%"\demo-emulator\target\release\fontgen.exe "%CD%"\demo\fontgen.exe
-  copy "%CD%"\demo-emulator\target\debug\fontgen.exe "%CD%"\demo\fontgen-d.exe
+  copy "%CD%"\target\release\cartridge.exe "%CD%"\demo\cartridge.exe
+  copy "%CD%"\target\debug\cartridge.exe "%CD%"\demo\cartridge-d.exe
+  copy "%CD%"\target\release\console.exe "%CD%"\demo\console.exe
+  copy "%CD%"\target\debug\console.exe "%CD%"\demo\console-d.exe
+  copy "%CD%"\target\release\fontgen.exe "%CD%"\demo\fontgen.exe
+  copy "%CD%"\target\debug\fontgen.exe "%CD%"\demo\fontgen-d.exe
   xcopy "%CD%"\demo-emulator\res "%CD%"\demo\res\
   copy "%CD%"\demo-emulator\scripts\run.bat "%CD%"\demo\run.bat
   '''
