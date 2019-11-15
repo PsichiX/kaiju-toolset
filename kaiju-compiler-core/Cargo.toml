@@ -1,6 +1,6 @@
 [package]
 name = "kaiju-compiler-core"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Patryk 'PsichiX' Budzynski <psichix@gmail.com> (https://psichix.io)"]
 edition = "2018"
 description = "Compiler core module of modern assembly language toolset"

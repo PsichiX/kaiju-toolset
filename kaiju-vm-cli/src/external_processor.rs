@@ -4,7 +4,7 @@ use std::sync::Mutex;
 use vm_core::processor::{OpAction, Processor};
 use vm_core::vm::Vm;
 
-type FuncOnProcessOp = fn(&String, &Vec<usize>, &Vec<usize>, &mut Vm) -> SimpleResult<OpAction>;
+type FuncOnProcessOp = fn(&String, &[usize], &[usize], &mut Vm) -> SimpleResult<OpAction>;
 
 lazy_static! {
     static ref LIB: Mutex<Option<Library>> = Mutex::new(None);
@@ -24,8 +24,8 @@ pub struct ExternalProcessor {}
 impl Processor for ExternalProcessor {
     fn process_op(
         op: &String,
-        params: &Vec<usize>,
-        targets: &Vec<usize>,
+        params: &[usize],
+        targets: &[usize],
         vm: &mut Vm,
     ) -> SimpleResult<OpAction> {
         if let Some(ref lib) = *LIB.lock().unwrap() {

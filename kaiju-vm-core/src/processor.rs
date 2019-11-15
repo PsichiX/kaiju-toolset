@@ -9,11 +9,10 @@ pub enum OpAction {
 }
 
 pub trait Processor {
-    #[allow(clippy::ptr_arg)]
     fn process_op(
         _op: &String,
-        _params: &Vec<usize>,
-        _targets: &Vec<usize>,
+        _params: &[usize],
+        _targets: &[usize],
         _vm: &mut Vm,
     ) -> SimpleResult<OpAction> {
         unimplemented!()

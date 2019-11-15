@@ -122,8 +122,8 @@ impl VmProcessor for Processor {
     #[allow(clippy::ptr_arg)]
     fn process_op(
         op: &String,
-        params: &Vec<usize>,
-        targets: &Vec<usize>,
+        params: &[usize],
+        targets: &[usize],
         vm: &mut Vm,
     ) -> SimpleResult<OpAction> {
         match op.as_str() {

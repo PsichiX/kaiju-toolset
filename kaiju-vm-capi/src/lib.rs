@@ -41,8 +41,8 @@ struct ExternalProcessor {}
 impl Processor for ExternalProcessor {
     fn process_op(
         op: &String,
-        params: &Vec<usize>,
-        targets: &Vec<usize>,
+        params: &[usize],
+        targets: &[usize],
         vm: &mut Vm,
     ) -> SimpleResult<OpAction> {
         if let Some((context, on_process_op)) = *PROCESS_OP.lock().unwrap() {
